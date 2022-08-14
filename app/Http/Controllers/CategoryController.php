@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Http\Requests\Admin\CateRequest;
 class CategoryController extends Controller
 {
     /**
@@ -42,20 +43,20 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CateRequest $request)
     {
         //
-        $request->validate([
-            'name_cate' => 'required|min:10|unique:categories',
-            'des_cate'  => 'required|min:20|max:1000'
-        ],[
-            'name_cate.required' => "Tên thể loại không được để trống",
-            'name_cate.min' => "Tên thể loại tối thiểu 10 ký tự.",
-            'des_cate.required' => "Miêu tả không được để trống",
-            'des_cate.min' => "Miêu tả tối thiểu 20 ký tự.",
-            'des_cate.max' => "Miêu tả tối đa 1000 ký tự.",
-            'name_cate.unique' => "Tên thể loại đã tồn tại"
-        ]);
+        // $request->validate([
+        //     'name_cate' => 'required|min:10|unique:categories',
+        //     'des_cate'  => 'required|min:20|max:1000'
+        // ],[
+        //     'name_cate.required' => "Tên thể loại không được để trống",
+        //     'name_cate.min' => "Tên thể loại tối thiểu 10 ký tự.",
+        //     'des_cate.required' => "Miêu tả không được để trống",
+        //     'des_cate.min' => "Miêu tả tối thiểu 20 ký tự.",
+        //     'des_cate.max' => "Miêu tả tối đa 1000 ký tự.",
+        //     'name_cate.unique' => "Tên thể loại đã tồn tại"
+        // ]);
         $dataInsert = [
             $request->name_cate,
             $request->des_cate,
@@ -85,6 +86,18 @@ class CategoryController extends Controller
     public function edit($id)
     {
         //
+            if(!empty($id)){
+                $title = "Sửa thể loại";
+                session()->put('id',$id);
+                $datas = $this -> Categories -> getDetail($id);
+                 return view('admin.categories.edit',compact("title","datas"));
+               
+            }else{
+                return redirect()->back();
+            }
+
+      
+
     }
 
     /**
@@ -94,9 +107,26 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CateRequest $request)
     {
         //
+        // dd($request);
+        $id = session('id');
+        // if(!empty($id)){
+        //     return redirect()->back()->with('msg',"Lỗi");
+        // }
+        $request->validate([
+            'name_cate' => 'unique:categories,name_cate,'.$id,
+        ],[
+            'name_cate.unique' => "Tên thể loại đã tồn tại1"
+        ]);
+        $datas = [
+            $request->name_cate,
+            $request->des_cate,
+            date("Y-m-d H:i:s")
+        ];
+        $this -> Categories -> updateCate($datas,$id);
+        return redirect()->route('cate.index')->with('msg',"Sửa thành công");
     }
 
     /**
@@ -105,8 +135,9 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function delete($id)
     {
         //
+        // return $id;
     }
 }

@@ -32,10 +32,10 @@
                 <td>{{ $cate->des_cate}}</td>
                 <td>{{ $cate->created_at}}</td>
                 <td>
-                  <a href="#" class="text-danger"><i class="fa-solid fa-trash-can"></i></a>
+                  <a href="{{ route('cate.destroy',['id'=>$cate->id ])}}" class="text-danger"><i class="fa-solid fa-trash-can"></i></a>
                  
                 </td>
-                <td><a href="#" class="text-info"><i class="fa-solid fa-pen-to-square"></i></a></td>
+                <td><a href="{{ route('cate.edit',['id'=>$cate->id ])}}" class="text-info"><i class="fa-solid fa-pen-to-square"></i></a></td>
               </tr>
             @endforeach
         </tbody>
